@@ -38,15 +38,22 @@ function load() {
             }
 
             setTimeout(function () {
+
+                /* Скролл вверх */
                 driver.executeScript("document.querySelector('body').scrollTop = 0");
 
+                /* Поиск загрузчика */
                 driver.findElement(By.className('._lm3a0')).then(function(webElement) {
-                    console.log('Loader...')
+
+                    /* Есть загрузчик, ждем пока загрузит */
+                    console.log('Loader...');
                     setTimeout(function () {
                         handle(skip);
                     }, 4000);
+
                 }, function(err) {
 
+                    /* Загрузчика нет, берем данные */
                     var items = driver.findElements(By.css('a[title]'));
                     items.then(function (elements) {
                         var items = elements.map(function (elem) {
@@ -54,7 +61,6 @@ function load() {
                         });
 
                         promise.all(items).then(function (result) {
-
                             for (var key in result){
                                 id++;
                                 followers.push(result[key]);
@@ -69,29 +75,30 @@ function load() {
                     }, function (err) {
 
                         if (replay){
+
                             replay--;
+                            console.log('Возможен обрыв соединения, повторная попытка ' + replay);
 
                             setTimeout(function () {
                                 handle();
-                            }, 10000);
+                            }, 5000);
                         } else {
 
                             /* Запись данных в файл */
-                            var filename = 'output.txt';
+                            var filename = 'db.txt';
                             var str = JSON.stringify(followers, null, 4);
 
                             fs.writeFile(filename, str, function(err){
                                 if(err) {
                                     console.log(err)
                                 } else {
-                                    console.log('File written!');
+                                    console.log('Загрузка завершена, подписчики ('+ id +') записаны в файл db.txy');
                                 }
                             });
                         }
                     });
-
                 });
-            }, 600);
+            }, 400);
         };
 
         setTimeout(function () {
