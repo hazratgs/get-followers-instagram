@@ -94,7 +94,7 @@ function load() {
                             } else {
 
                                 /* Запись данных в файл */
-                                var filename = 'db.txt';
+                                var filename = 'basa.txt';
                                 var str = JSON.stringify(followers, null, 4);
 
                                 fs.writeFile(filename, str, function(err){
@@ -132,4 +132,3 @@ function isElementPresent(locator) {
 }
 
 
-setTimeout(function () {}, 6000000000)
