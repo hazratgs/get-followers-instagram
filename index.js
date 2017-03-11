@@ -56,45 +56,55 @@ function load() {
                     /* Загрузчика нет, берем данные */
                     var items = driver.findElements(By.css('a[title]'));
                     items.then(function (elements) {
-                        var items = elements.map(function (elem) {
-                            return elem.getText();
-                        });
 
-                        promise.all(items).then(function (result) {
-                            for (var key in result){
-                                id++;
-                                followers.push(result[key]);
-                                console.log(id + '. ' + result[key]);
-                            }
+                        if (elements.length){
 
-                            /* Очищаем список */
-                            driver.executeScript('document.querySelector("ul._ighw9").innerHTML = ""');
+                            /* Элементы есть */
+                            var items = elements.map(function (elem) {
+                                return elem.getText();
+                            });
 
-                            handle();
-                        });
-                    }, function (err) {
+                            promise.all(items).then(function (result) {
+                                for (var key in result){
+                                    id++;
+                                    followers.push(result[key]);
+                                    console.log(id + '. ' + result[key]);
+                                }
 
-                        if (replay){
+                                /* Очищаем список */
+                                driver.executeScript('document.querySelector("ul._ighw9").innerHTML = ""');
+                                /* Удалять например, только li */
 
-                            replay--;
-                            console.log('Возможен обрыв соединения, повторная попытка ' + replay);
-
-                            setTimeout(function () {
-                                handle();
-                            }, 5000);
+                                /* Переход на следующую страницу */
+                                setTimeout(function () {
+                                    handle();
+                                }, 200);
+                            });
                         } else {
 
-                            /* Запись данных в файл */
-                            var filename = 'db.txt';
-                            var str = JSON.stringify(followers, null, 4);
+                            /* Элементов нет... */
+                            if (replay){
+                                replay--;
 
-                            fs.writeFile(filename, str, function(err){
-                                if(err) {
-                                    console.log(err)
-                                } else {
-                                    console.log('Загрузка завершена, подписчики ('+ id +') записаны в файл db.txy');
-                                }
-                            });
+                                console.log('Возможен обрыв соединения, повторная попытка ' + replay);
+                                setTimeout(function () {
+                                    handle();
+                                }, 5000);
+
+                            } else {
+
+                                /* Запись данных в файл */
+                                var filename = 'db.txt';
+                                var str = JSON.stringify(followers, null, 4);
+
+                                fs.writeFile(filename, str, function(err){
+                                    if(err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log('Загрузка завершена, подписчики ('+ id +') записаны в файл db.txy');
+                                    }
+                                });
+                            }
                         }
                     });
                 });
@@ -122,4 +132,4 @@ function isElementPresent(locator) {
 }
 
 
-setTimeout(function () {}, 60000)
+setTimeout(function () {}, 6000000000)
